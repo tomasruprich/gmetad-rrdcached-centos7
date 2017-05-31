@@ -1,0 +1,20 @@
+[Unit]
+Description=rrdcached
+
+[Service]
+Restart=on-failure
+PIDFile=/var/run/rrdcached/rrdcached.pid
+RuntimeDirectory=rrdcached
+RuntimeDirectoryMode=0755
+User=nobody
+PermissionsStartOnly=yes
+ExecStart=/usr/bin/rrdcached \
+  -p /var/run/rrdcached/rrdcached.pid \
+  -s apache -m 664 -l unix:/var/run/rrdcached/rrdcached.sock \
+  -s nobody -m 777 -P FLUSH,STATS,HELP -l unix:/var/run/rrdcached/rrdcached.limited.sock \
+  -b /var/lib/ganglia/rrds -B \
+  -w 300 -z 300
+
+[Install]
+WantedBy=multi-user.target
+
